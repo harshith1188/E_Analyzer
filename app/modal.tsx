@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Pressable, SafeAreaView, TextInput, View,Text,StyleSheet} from "react-native";
+import { Pressable, SafeAreaView, StyleSheet, Text, TextInput, View } from "react-native";
 
 export default function ()
 {
