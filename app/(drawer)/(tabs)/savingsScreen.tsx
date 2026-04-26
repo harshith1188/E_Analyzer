@@ -4,9 +4,8 @@ export default  function SavingsScreen(){
   return(
   <SafeAreaView>
     <View>
-      <Text>hello this is Savings screen
-      </Text>
-      </View>
+      <Text>hello this is Savings screen</Text>
+    </View>
   </SafeAreaView>
 )
 }

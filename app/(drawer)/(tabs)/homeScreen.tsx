@@ -15,31 +15,44 @@ export default  function HomeScreen(){
     {/* c2 */}
     <View style={styles.c2}>
       
-      <View style={styles.c2_1}> 
-      <MaterialIcons name="wallet" color={"white"} size={39} />
-      </View>
-
-      <View style={styles.c2_2}>
-        <Text style={styles.h2}>Estimated Bill</Text>
-        <Text style={styles.h2}>$ 1,2456</Text>
-        <View style={{backgroundColor:'yellow',padding:10}}></View>
-      </View>
+ 
+    <View style={styles.c2_2}>
+        <Text style={styles.h2}>Estimated Bill 🧾</Text>
+        <Text style={styles.h2}>₹ 1,2456</Text>
+          <View style={{padding:10,borderRadius:10}}>
+            <Text style={styles.h3}>You Saved ₹ 115.90 this month</Text>
+          </View>
+    </View>
 
     </View>
 
     {/* c3 */}
     <View style={styles.c3}>
-      <View style={styles.c3_1}></View>
-      <View style={styles.c3_2}></View>
+      
+      <View style={styles.c3_1}>
+        <View style={{backgroundColor:'blue',height:80,width:80,borderRadius:100,alignItems:'center',justifyContent:'center'}}><MaterialIcons name="electric-bolt" size={38} color={"white"}/></View>
+       <Text style={styles.h2}>Total units Consumed</Text>
+       <Text style={[styles.h2,{color:'blue'}]}>186.5 kWh</Text>  
+      </View>
+
     </View>
 
     {/* c4 */}
     <View style={styles.c4}>
 
     <Text style={styles.h2}>Bill Comparision</Text>
-    <View style={styles.c4_1}></View>
-    <View style={styles.c4_2}></View>
+    
+    <View style={styles.c4_1}>
+      <Text style={{fontSize:20,fontWeight:'bold'}}>This Month</Text>
+      <Text style={styles.h2}>₹1,245.6</Text>
+    </View>
 
+    <View style={styles.c4_2}>
+      <Text style={{fontSize:20,fontWeight:'bold'}}>Last Month</Text>
+      <Text style={styles.h2}>₹1,365.9</Text>
+      </View>
+
+      <View style={{padding:10,backgroundColor:'yellow'}}><Text style={{fontSize:18,fontWeight:'bold'}}>You saved 115.90 this month</Text></View>
     </View>
     
     
@@ -83,7 +96,8 @@ const styles= StyleSheet.create({
   h2:{
     fontSize:22,
     textTransform:'capitalize',
-    fontWeight:'bold'
+    fontWeight:'bold',
+    color:"green"
   },
   h3:{
     fontSize:16
@@ -100,8 +114,8 @@ const styles= StyleSheet.create({
     backgroundColor:"rgba(206, 196, 196, 0.3)"
   },
   c2_1:{
-    height:80,
-    width:80,
+    height:50,
+    width:50,
     justifyContent:'center',
     alignItems:'center',
     backgroundColor:'green',
@@ -110,8 +124,7 @@ const styles= StyleSheet.create({
   c2_2:{
     minHeight:150,
     padding:10,
-    width:"60%",
-    backgroundColor:'pink',
+    width:"80%",
     justifyContent:'space-evenly',
     alignItems:'center',
     borderRadius:10
@@ -127,17 +140,7 @@ const styles= StyleSheet.create({
   },
   c3_1:{
     minHeight:220,
-    width:'50%',
-    borderWidth:0.5,
-    borderRadius:12,
-    justifyContent:'space-evenly',
-    alignItems:'center',
-    borderColor:'rgba(0,0,0,0.3)',
-    backgroundColor:'rgba(206, 196, 196, 0.3)'
-  },
-  c3_2:{
-    minHeight:220,
-    width:'50%',
+    width:'90%',
     borderWidth:0.5,
     borderRadius:12,
     justifyContent:'space-evenly',
@@ -157,14 +160,16 @@ const styles= StyleSheet.create({
   c4_1:{
     minHeight:150,
     width:"100%",
-    backgroundColor:'red',
+    backgroundColor:"rgba(206, 196, 196, 0.3)",
+    borderRadius:10,
     alignItems:'center',
     justifyContent:'space-evenly'
   },
  c4_2:{
     minHeight:150,
     width:"100%",
-    backgroundColor:'red',
+    backgroundColor:"rgba(206, 196, 196, 0.3)",
+    borderRadius:10,
     alignItems:'center',
     justifyContent:'space-evenly'
   },
@@ -197,7 +202,6 @@ const styles= StyleSheet.create({
     alignItems:'center',
     backgroundColor:'yellow',
     justifyContent:'space-evenly'
-
   },
   c6:{
     minHeight:150,

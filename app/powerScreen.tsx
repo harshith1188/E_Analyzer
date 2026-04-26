@@ -8,7 +8,7 @@ export default function PowerbyScreen(){
         useCallback(()=>{
                 const timer=setTimeout(() => {
                     router.replace("/(drawer)/(tabs)/homeScreen")
-                }, 3000);
+                },3000);
                 return()=>clearTimeout(timer)
         },[])
     );
