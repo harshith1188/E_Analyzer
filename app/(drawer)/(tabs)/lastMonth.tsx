@@ -1,9 +1,62 @@
 import { MaterialIcons } from "@expo/vector-icons";
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from "expo-router";
+import { useCallback, useState } from "react";
+import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
-
 export default function LastMonthDetails(){
+
+    const[name,setname]=useState('');
+    const[pin,setPin]=useState('');
+    const[city,setcity]=useState('');
+    const[kwh,setkwh]=useState('');
+    const[bill,setbill]=useState('');
+    const[pwr,setpwr]=useState('');
+    const[pp,setpp]=useState('');
+
+useFocusEffect(
+  useCallback(() => {
+    const reload = async () => {
+      const storedobj = await AsyncStorage.getItem('lastMonthData');
+
+      if (storedobj) {
+        const parsedData = JSON.parse(storedobj);
+        console.log(parsedData.name);
+        setname(parsedData.name);
+        setPin(parsedData.pin);
+        setcity(parsedData.city);
+        setkwh(parsedData.units);
+        setbill(parsedData.totalBill);
+        setpwr(parsedData.power);
+        setpp(parsedData.pricePerUnit);
+      }
+    };
+
+    reload();
+  }, [])
+);
+    const handleinputs = async () => {
+  if (!name || !pin || !city || !kwh || !bill || !pwr || !pp) {
+    Alert.alert("Error", "Enter all the fields");
+    return;
+      }
+
+  const obj = {
+    name,
+    pin,
+    city,
+    units: kwh,
+    totalBill: bill,
+    power: pwr,
+    pricePerUnit: pp,
+  };
+
+  await AsyncStorage.setItem('lastMonthData', JSON.stringify(obj));
+
+  Alert.alert("Success", "Data saved successfully");
+};
+
     return(
         <SafeAreaView style={{flex:1}}>
         <ScrollView style={{flex:1}} contentContainerStyle={{justifyContent:'space-evenly',alignItems:'center',gap:40}}>
@@ -19,16 +72,25 @@ export default function LastMonthDetails(){
             <Text style={styles.h2}>User name</Text>
             <TextInput style={styles.input}
             placeholder="Enter your name"
+            value={name}
+            onChangeText={setname}
             />
 
             <Text style={styles.h2}>Pin Code</Text>
             <TextInput style={styles.input}
+            maxLength={6}
+            value={pin}
+            onChangeText={setPin}
+            keyboardType="number-pad"
             placeholder="Enter your 6-digit Pin code"
             />
         
-               <Text style={styles.h2}>city</Text>
+            <Text style={styles.h2}>city</Text>
             <TextInput style={styles.input}
             placeholder="Enter your city"
+            value={city}
+            onChangeText={setcity}
+            keyboardType="default"
             />
         </View>
 
@@ -40,21 +102,33 @@ export default function LastMonthDetails(){
            <Text style={styles.h2}>Total units consumed (kWh)</Text>
             <TextInput style={styles.input}
             placeholder="Enter Total units"
+            value={kwh}
+            onChangeText={setkwh}
+            keyboardType="number-pad"
             />
 
             <Text style={styles.h2}>Total Bill Amount</Text>
             <TextInput style={styles.input}
             placeholder="Enter the bill amount"
+            value={bill}
+            keyboardType="number-pad"
+            onChangeText={setbill}
             />
         
             <Text style={styles.h2}>Average Power (watts)</Text>
             <TextInput style={styles.input}
             placeholder="Enter Average power"
+            keyboardType="number-pad"
+            value={pwr}
+            onChangeText={setpwr}
             />
 
             <Text style={styles.h2}>Electricity  Price (per unit)</Text>
             <TextInput style={styles.input}
             placeholder="Enter price per unit"
+            value={pp}
+            keyboardType="number-pad"
+            onChangeText={setpp}
             />
         </View>
 
@@ -65,7 +139,7 @@ export default function LastMonthDetails(){
         </View>
 
         {/* c5 */}
-        <TouchableOpacity style={styles.c5}>
+        <TouchableOpacity style={styles.c5} onPress={handleinputs}>
             <Text style={[styles.h2,{color:'white'}]}>Save & Analyse</Text>
         </TouchableOpacity>
 
