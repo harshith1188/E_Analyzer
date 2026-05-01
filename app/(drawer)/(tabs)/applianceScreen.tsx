@@ -1,13 +1,13 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import {
-    FlatList,
-    Image,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  FlatList,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -20,7 +20,7 @@ export default function Appliances() {
   // 🔹 State for additional appliances
   const [extraAppliances, setExtraAppliances] = useState([]);
   const [power,setpower]=useState(334);
-
+  const[units,setunits]=useState(0);
 useFocusEffect(
   useCallback(() => {
     const loadData = async () => {
@@ -35,8 +35,24 @@ useFocusEffect(
           return sum + item.power;
         }, 0);
         setpower(totalExtraPower);
-        await  AsyncStorage.setItem('totalwatts',totalExtraPower);
-      } else {
+        await  AsyncStorage.setItem('totalwatts',totalExtraPower.toString());
+        
+        // calculate extraunits
+        const totalExtraUnits = parsedData.reduce((sum, item) => {
+          return sum + (item.power * item.hours * 30) / 1000;
+        }, 0);
+        
+        //calculate units of fixed appliance
+        const fixedUnits=(9*5*30)/1000+(75*10*30)/1000+(100*4*30)/1000+(150*24*30)/1000;
+        
+        //combine fixed and extra appliance units
+        const totalUnits = fixedUnits + totalExtraUnits;
+        setunits(totalUnits);
+        await AsyncStorage.setItem("totalUnits", totalUnits.toString());
+      
+      } 
+      
+      else {
         setExtraAppliances([]);
         setpower(0);
       }
@@ -98,6 +114,17 @@ useFocusEffect(
                 {9+75+100+150+power}
               </Text>
             </View>
+
+            <View style={styles.c2_2}>
+              <Text style={styles.h2}>
+                <MaterialIcons name="bolt" size={39} color={"green"} /> Total Power
+              </Text>
+              <Text style={styles.h1}>
+              {units.toFixed(2)}kWh
+              </Text>
+            </View>
+  
+
           </ScrollView>
         </View>
 

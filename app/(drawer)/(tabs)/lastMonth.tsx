@@ -11,10 +11,10 @@ export default function LastMonthDetails(){
     const[pin,setPin]=useState('');
     const[city,setcity]=useState('');
     const[kwh,setkwh]=useState('');
-    const[bill,setbill]=useState('');
-    const[pwr,setpwr]=useState('');
+    const[fixedch,setfixedch]=useState('');
+    const[epp,setepp]=useState('');
     const[pp,setpp]=useState('');
-
+    const[subsi,setsubsi]=useState('');
 useFocusEffect(
   useCallback(() => {
     const reload = async () => {
@@ -27,9 +27,11 @@ useFocusEffect(
         setPin(parsedData.pin);
         setcity(parsedData.city);
         setkwh(parsedData.units);
-        setbill(parsedData.totalBill);
-        setpwr(parsedData.power);
+        setfixedch(parsedData.fixedCharges);
+        console.log(parsedData.fixedCharges);
+        setepp(parsedData.extraChargePerUnit);
         setpp(parsedData.pricePerUnit);
+        setsubsi(parsedData.subsidyUnits)
       }
     };
 
@@ -37,24 +39,34 @@ useFocusEffect(
   }, [])
 );
     const handleinputs = async () => {
-  if (!name || !pin || !city || !kwh || !bill || !pwr || !pp) {
+  if (!name || !pin || !city || !kwh || !fixedch || !epp || !pp ||!subsi) {
     Alert.alert("Error", "Enter all the fields");
     return;
       }
-
   const obj = {
     name,
     pin,
     city,
-    units: kwh,
-    totalBill: bill,
-    power: pwr,
-    pricePerUnit: pp,
+    units: (kwh),
+    fixedCharges:fixedch,
+    extraChargePerUnit:(epp),
+    pricePerUnit:(pp),
+    subsidyUnits:(subsi),
+
   };
 
   await AsyncStorage.setItem('lastMonthData', JSON.stringify(obj));
 
   Alert.alert("Success", "Data saved successfully");
+    
+  let units=Number(kwh)-Number(subsi);
+  let price=Number(pp);
+  let fixed=Number(fixedch);
+  let extra=Number(epp);
+
+  let finalbill=(units*price)+fixed+(units*extra);
+  alert("final bill is"+finalbill);
+ 
 };
 
     return(
@@ -107,20 +119,20 @@ useFocusEffect(
             keyboardType="number-pad"
             />
 
-            <Text style={styles.h2}>Total Bill Amount</Text>
+            <Text style={styles.h2}>Fixed charge Amount</Text>
             <TextInput style={styles.input}
-            placeholder="Enter the bill amount"
-            value={bill}
+            placeholder="Enter the fixed charges"
+            value={fixedch}
             keyboardType="number-pad"
-            onChangeText={setbill}
+            onChangeText={setfixedch}
             />
         
-            <Text style={styles.h2}>Average Power (watts)</Text>
+            <Text style={styles.h2}>Extra charge per unit</Text>
             <TextInput style={styles.input}
-            placeholder="Enter Average power"
+            placeholder="Enter extra charge per unit"
             keyboardType="number-pad"
-            value={pwr}
-            onChangeText={setpwr}
+            value={epp}
+            onChangeText={setepp}
             />
 
             <Text style={styles.h2}>Electricity  Price (per unit)</Text>
@@ -130,6 +142,19 @@ useFocusEffect(
             keyboardType="number-pad"
             onChangeText={setpp}
             />
+            <Text style={styles.h2}>Subsidy Eligible Units (kwh)</Text>
+            <TextInput style={styles.input}
+            placeholder="Enter Subsidy units"
+            value={subsi}
+            keyboardType="number-pad"
+            onChangeText={setsubsi}/>
+
+            <Text style={styles.h2}>final bill amount after  subsidy </Text>
+            <TextInput style={styles.input}
+            placeholder="final bill amount"
+            editable={false}
+            keyboardType="number-pad"/>
+      
         </View>
 
         {/* c4 */}
@@ -195,7 +220,7 @@ const styles =StyleSheet.create({
         borderRadius:10
     },
     c3:{
-        minHeight:700,
+        minHeight:800,
         width:"90%",
         justifyContent:'space-evenly',
         alignItems:"flex-start",
