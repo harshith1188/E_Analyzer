@@ -13,14 +13,19 @@ export default  function SavingsScreen(){
           {
             text:'delete',
             style:'destructive',
-            onPress:()=>handledelete
+            onPress:handledelete
           }
-        ]
+        ],
+        {
+       cancelable: true,
+        onDismiss: () => console.log("Dismissed")
+        }
       )
    }
 
    const handledelete=()=>{
     console.log("deleted all the files")
+    alert('deletd all files');
    }
   return(
   <SafeAreaView>
