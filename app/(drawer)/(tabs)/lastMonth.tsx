@@ -2,9 +2,9 @@ import { MaterialIcons } from "@expo/vector-icons";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
-import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { TextInput } from "react-native-gesture-handler";
+import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { calculateFinalBill } from "../../../components/utils/calculate_bill";
 export default function LastMonthDetails(){
 
     const[name,setname]=useState('');
@@ -15,6 +15,7 @@ export default function LastMonthDetails(){
     const[epp,setepp]=useState('');
     const[pp,setpp]=useState('');
     const[subsi,setsubsi]=useState('');
+    const[bill,setbill]=useState(0);
 useFocusEffect(
   useCallback(() => {
     const reload = async () => {
@@ -22,16 +23,16 @@ useFocusEffect(
 
       if (storedobj) {
         const parsedData = JSON.parse(storedobj);
-        console.log(parsedData.name);
         setname(parsedData.name);
         setPin(parsedData.pin);
         setcity(parsedData.city);
         setkwh(parsedData.units);
         setfixedch(parsedData.fixedCharges);
-        console.log(parsedData.fixedCharges);
         setepp(parsedData.extraChargePerUnit);
         setpp(parsedData.pricePerUnit);
         setsubsi(parsedData.subsidyUnits)
+        setbill(String(parsedData.finalbill));
+        console.log("savedbill",parsedData.finalbill)
       }
     };
 
@@ -43,7 +44,17 @@ useFocusEffect(
     Alert.alert("Error", "Enter all the fields");
     return;
       }
-  const obj = {
+      
+   const result = calculateFinalBill({
+  totalUnits:Number(kwh),
+  subsidyUnits: Number(subsi),
+  pricePerUnit: Number(pp), 
+  extraChargePerUnit: Number(epp),
+  fixedCharges: Number(fixedch),
+});
+
+
+    const obj = {
     name,
     pin,
     city,
@@ -52,21 +63,22 @@ useFocusEffect(
     extraChargePerUnit:(epp),
     pricePerUnit:(pp),
     subsidyUnits:(subsi),
-
+    finalbill:String(result.finalBill)
   };
+ 
+  
+
+  setbill(String(result.finalBill));
 
   await AsyncStorage.setItem('lastMonthData', JSON.stringify(obj));
 
   Alert.alert("Success", "Data saved successfully");
     
-  let units=Number(kwh)-Number(subsi);
-  let price=Number(pp);
-  let fixed=Number(fixedch);
-  let extra=Number(epp);
+  
 
-  let finalbill=(units*price)+fixed+(units*extra);
-  alert("final bill is"+finalbill);
- 
+console.log("final bill",result.finalBill);
+console.log(result.chargeableUnits);
+
 };
 
     return(
@@ -150,8 +162,11 @@ useFocusEffect(
             onChangeText={setsubsi}/>
 
             <Text style={styles.h2}>final bill amount after  subsidy </Text>
+
             <TextInput style={styles.input}
             placeholder="final bill amount"
+            value={bill}
+            onChangeText={setbill}
             editable={false}
             keyboardType="number-pad"/>
       

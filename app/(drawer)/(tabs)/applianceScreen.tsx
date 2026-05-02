@@ -1,6 +1,7 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import {
+  Alert,
   FlatList,
   Image,
   ScrollView,
@@ -17,50 +18,87 @@ import { useCallback, useState } from "react";
 
 export default function Appliances() {
 
-  // 🔹 State for additional appliances
   const [extraAppliances, setExtraAppliances] = useState([]);
   const [power,setpower]=useState(334);
   const[units,setunits]=useState(0);
-useFocusEffect(
-  useCallback(() => {
-    const loadData = async () => {
-      const data = await AsyncStorage.getItem("appliances");
 
-      if (data) {
-        let parsedData = JSON.parse(data);
-        setExtraAppliances(parsedData);
+  useFocusEffect(
+    useCallback(() => {
+      const loadData = async () => {
+        const data = await AsyncStorage.getItem("appliances");
 
-        // ✅ calculate total extra power
-        const totalExtraPower = parsedData.reduce((sum, item) => {
-          return sum + item.power;
-        }, 0);
-        setpower(totalExtraPower);
-        await  AsyncStorage.setItem('totalwatts',totalExtraPower.toString());
-        
-        // calculate extraunits
-        const totalExtraUnits = parsedData.reduce((sum, item) => {
-          return sum + (item.power * item.hours * 30) / 1000;
-        }, 0);
-        
-        //calculate units of fixed appliance
-        const fixedUnits=(9*5*30)/1000+(75*10*30)/1000+(100*4*30)/1000+(150*24*30)/1000;
-        
-        //combine fixed and extra appliance units
-        const totalUnits = fixedUnits + totalExtraUnits;
-        setunits(totalUnits);
-        await AsyncStorage.setItem("totalUnits", totalUnits.toString());
-      
-      } 
-      
-      else {
-        setExtraAppliances([]);
-        setpower(0);
-      }
-    };
+        if (data) {
+          let parsedData = JSON.parse(data);
+          setExtraAppliances(parsedData);
 
-    loadData();
-  }, [])
-);
+          const totalExtraPower = parsedData.reduce((sum, item) => {
+            return sum + item.power;
+          }, 0);
+
+          setpower(totalExtraPower);
+          await AsyncStorage.setItem('totalwatts', totalExtraPower.toString());
+
+          const totalExtraUnits = parsedData.reduce((sum, item) => {
+            return sum + (item.power * item.hours * 30) / 1000;
+          }, 0);
+
+          const fixedUnits =
+            (9*5*30)/1000 +
+            (75*10*30)/1000 +
+            (100*4*30)/1000 +
+            (150*24*30)/1000;
+
+          const totalUnits = fixedUnits + totalExtraUnits;
+          setunits(totalUnits);
+
+          await AsyncStorage.setItem("totalUnits", totalUnits.toString());
+
+        } else {
+          setExtraAppliances([]);
+          setpower(0);
+        }
+      };
+
+      loadData();
+    }, [])
+  );
+
+  // ✅ DELETE SINGLE APPLIANCE
+  const handleDeleteOne = (index) => {
+    Alert.alert("Delete", "Delete this appliance?", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Delete",
+        style: "destructive",
+        onPress: async () => {
+          const updated = extraAppliances.filter((_, i) => i !== index);
+          setExtraAppliances(updated);
+          await AsyncStorage.setItem("appliances", JSON.stringify(updated));
+        },
+      },
+    ]);
+  };
+
+  // ✅ DELETE ALL
+  const handledelete = () => {
+    Alert.alert("Delete",
+      "do you want to delete all the extra appliances ?",
+      [
+        { text:'cancel', style:"cancel" },
+        {
+          text:'delete',
+          style:'destructive',
+          onPress: handleconfirmdelete
+        }
+      ]
+    )
+  }
+
+  const handleconfirmdelete = async () => {
+    await AsyncStorage.removeItem('appliances');
+    setExtraAppliances([]);
+  }
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ScrollView
@@ -69,10 +107,9 @@ useFocusEffect(
           alignItems: "center",
           gap: 40,
         }}
-        style={{ flex: 1 }}
       >
 
-        {/* c1 */}
+        {/* HEADER */}
         <View style={styles.c1}>
           <Text style={styles.h1}>Appliances</Text>
           <Text style={styles.h3}>
@@ -80,24 +117,13 @@ useFocusEffect(
           </Text>
         </View>
 
-        {/* c2 */}
+        {/* STATS */}
         <View style={styles.c2}>
-          <ScrollView
-            horizontal={true}
-            contentContainerStyle={{
-              justifyContent: "space-evenly",
-              alignItems: "center",
-              gap: 30,
-            }}
-            style={{ padding: 20 }}
-          >
+          <ScrollView horizontal contentContainerStyle={{ gap: 30 }}>
+
             <View style={styles.c2_1}>
               <Text style={styles.h2}>
-                <MaterialIcons
-                  name="electrical-services"
-                  size={39}
-                  color={"green"}
-                />{" "}
+                <MaterialIcons name="electrical-services" size={30} color="green" />
                 Total Appliances
               </Text>
               <Text style={styles.h1}>
@@ -107,91 +133,73 @@ useFocusEffect(
 
             <View style={styles.c2_2}>
               <Text style={styles.h2}>
-                <MaterialIcons name="bolt" size={39} color={"green"} /> Total Power
+                <MaterialIcons name="bolt" size={30} color="green" />
+                Total Power
               </Text>
               <Text style={styles.h1}>
-                {/* you can calculate later */}
-                {9+75+100+150+power}
+                {9+75+100+150+power} Watts
               </Text>
             </View>
 
-            <View style={styles.c2_2}>
+            <View style={styles.c2_3}>
               <Text style={styles.h2}>
-                <MaterialIcons name="bolt" size={39} color={"green"} /> Total Power
+                <MaterialIcons name="bolt" size={30} color="green" />
+                Total Units
               </Text>
               <Text style={styles.h1}>
-              {units.toFixed(2)}kWh
+                {units.toFixed(2)} kWh
               </Text>
             </View>
-  
 
           </ScrollView>
         </View>
 
-        <Text style={styles.h1}>Your Appliances</Text>
-
-        {/* c3 (FIXED - unchanged) */}
+        {/* BASIC APPLIANCES (UNCHANGED) */}
         <View style={styles.c3}>
           <Text style={styles.h2}>Basic Appliances</Text>
 
           {/* Bulb */}
-          <TouchableOpacity style={styles.dives}>
-            <View style={styles.imgBox}>
-              <Image source={require("../../../assets/images/bulb.png")} style={styles.img} />
-            </View>
+          <View style={styles.dives}>
+            <Image source={require("../../../assets/images/bulb.png")} style={styles.img} />
             <View style={styles.mid}>
               <Text style={styles.h2}>LED Bulb</Text>
               <Text style={styles.h3}>usage: 5 h/day</Text>
             </View>
-            <View style={styles.right}>
-              <Text style={styles.power}>9 W</Text>
-            </View>
-          </TouchableOpacity>
+            <Text style={styles.power}>9 W</Text>
+          </View>
 
           {/* Fan */}
-          <TouchableOpacity style={styles.dives}>
-            <View style={styles.imgBox}>
-              <Image source={require("../../../assets/images/fan.png")} style={styles.img} />
-            </View>
+          <View style={styles.dives}>
+            <Image source={require("../../../assets/images/fan.png")} style={styles.img} />
             <View style={styles.mid}>
               <Text style={styles.h2}>Ceiling Fan</Text>
               <Text style={styles.h3}>usage: 10 h/day</Text>
             </View>
-            <View style={styles.right}>
-              <Text style={styles.power}>75 W</Text>
-            </View>
-          </TouchableOpacity>
+            <Text style={styles.power}>75 W</Text>
+          </View>
 
           {/* TV */}
-          <TouchableOpacity style={styles.dives}>
-            <View style={styles.imgBox}>
-              <Image source={require("../../../assets/images/tv.png")} style={styles.img} />
-            </View>
+          <View style={styles.dives}>
+            <Image source={require("../../../assets/images/tv.png")} style={styles.img} />
             <View style={styles.mid}>
               <Text style={styles.h2}>LED TV</Text>
               <Text style={styles.h3}>usage: 4 h/day</Text>
             </View>
-            <View style={styles.right}>
-              <Text style={styles.power}>100 W</Text>
-            </View>
-          </TouchableOpacity>
+            <Text style={styles.power}>100 W</Text>
+          </View>
 
           {/* Fridge */}
-          <TouchableOpacity style={styles.dives}>
-            <View style={styles.imgBox}>
-              <Image source={require("../../../assets/images/fridge.png")} style={styles.img} />
-            </View>
+          <View style={styles.dives}>
+            <Image source={require("../../../assets/images/fridge.png")} style={styles.img} />
             <View style={styles.mid}>
               <Text style={styles.h2}>Refrigerator</Text>
               <Text style={styles.h3}>usage: 24 h/day</Text>
             </View>
-            <View style={styles.right}>
-              <Text style={styles.power}>150 W</Text>
-            </View>
-          </TouchableOpacity>
+            <Text style={styles.power}>150 W</Text>
+          </View>
         </View>
 
-        {/* c4 (NEW - Additional Appliances) */}
+        {/* EXTRA APPLIANCES */}
         <View style={styles.c4}>
           <Text style={styles.h2}>Additional Appliances</Text>
 
@@ -199,19 +207,28 @@ useFocusEffect(
             data={extraAppliances}
             scrollEnabled={false}
             keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item }) => (
+            renderItem={({ item, index }) => (
               <View style={styles.dives}>
+                
                 <View style={styles.mid}>
                   <Text style={styles.h2}>{item.name}</Text>
                   <Text style={styles.h3}>
                     usage: {item.hours} h/day
                   </Text>
                 </View>
+
                 <View style={styles.right}>
-                  <Text style={styles.power}>
-                    {item.power} W
-                  </Text>
+                  <Text style={styles.power}>{item.power} W</Text>
+
+                  {/* DELETE BUTTON */}
+                  <TouchableOpacity
+                    onPress={() => handleDeleteOne(index)}
+                    style={styles.deleteBtn}
+                  >
+                    <MaterialIcons name="delete" size={22} color="white" />
+                  </TouchableOpacity>
                 </View>
+
               </View>
             )}
             ListEmptyComponent={
@@ -222,15 +239,17 @@ useFocusEffect(
           />
         </View>
 
-        {/* Add Button */}
-        <TouchableOpacity
-          style={styles.btn}
-          onPress={() => {
-            router.navigate("/addAppliance");
-          }}
-        >
+        {/* ADD BUTTON */}
+        <TouchableOpacity style={styles.btn} onPress={() => router.navigate("/addAppliance")}>
           <Text style={{ fontSize: 22, color: "white" }}>
             Add Appliance
+          </Text>
+        </TouchableOpacity>
+
+        {/* DELETE ALL */}
+        <TouchableOpacity style={[styles.btn,{backgroundColor:'red'}]} onPress={handledelete}>
+          <Text style={{ fontSize: 22, color: "white" }}>
+            Delete all Appliance
           </Text>
         </TouchableOpacity>
 
@@ -240,96 +259,31 @@ useFocusEffect(
 }
 
 const styles = StyleSheet.create({
-  c1: {
-    minHeight: 120,
-    width: "90%",
-    padding: 20,
-    backgroundColor: "rgba(0,0,0,0.1)",
-    borderRadius: 10,
+  c1:{minHeight:120,width:"90%",padding:20,backgroundColor:"rgba(0,0,0,0.1)",borderRadius:10},
+  h1:{fontSize:28,fontWeight:"bold",color:"green"},
+  h2:{fontSize:20},
+  h3:{fontSize:15},
+
+  c2:{minHeight:200,width:"90%"},
+  c2_1:{minHeight:180,width:290,alignItems:"center",justifyContent:"space-evenly",backgroundColor:"rgba(0,0,0,0.1)",borderRadius:10},
+  c2_2:{minHeight:180,width:290,alignItems:"center",justifyContent:"space-evenly",backgroundColor:"rgba(0,0,0,0.1)",borderRadius:10},
+  c2_3:{minHeight:180,width:290,alignItems:"center",justifyContent:"space-evenly",backgroundColor:"rgba(0,0,0,0.1)",borderRadius:10},
+
+  c3:{width:"90%",borderRadius:10,padding:10,borderWidth:1,gap:10},
+  c4:{width:"90%",borderRadius:10,padding:10,borderWidth:1,gap:20},
+
+  dives:{flexDirection:"row",alignItems:"center",justifyContent:"space-between",backgroundColor:"rgba(0,0,0,0.1)",borderRadius:10,padding:10,marginTop:10},
+  img:{width:60,height:60,resizeMode:"contain"},
+  mid:{width:"50%",alignItems:"center"},
+  right:{width:"30%",alignItems:"center"},
+  power:{fontSize:18,fontWeight:"bold",color:"green"},
+
+  deleteBtn:{
+    marginTop:5,
+    backgroundColor:"red",
+    padding:6,
+    borderRadius:6
   },
-  h1: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "green",
-  },
-  h2: {
-    fontSize: 20,
-  },
-  h3: {
-    fontSize: 15,
-  },
-  c2: {
-    minHeight: 200,
-    width: "90%",
-  },
-  c2_1: {
-    minHeight: 180,
-    width: 290,
-    alignItems: "center",
-    justifyContent: "space-evenly",
-    backgroundColor: "rgba(0,0,0,0.1)",
-    borderRadius: 10,
-  },
-  c2_2: {
-    minHeight: 180,
-    width: 290,
-    justifyContent: "space-evenly",
-    alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.1)",
-    borderRadius: 10,
-  },
-  c3: {
-    width: "90%",
-    borderRadius: 10,
-    padding: 10,
-    borderWidth: 1,
-    gap: 10,
-  },
-  c4: {
-    width: "90%",
-    borderRadius: 10,
-    padding: 10,
-    borderWidth: 1,
-    gap: 30,
-  },
-  dives: {
-    minHeight: 100,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: "rgba(0,0,0,0.1)",
-    borderRadius: 10,
-    padding: 10,
-    marginTop:20
-  },
-  imgBox: {
-    width: "20%",
-    alignItems: "center",
-  },
-  img: {
-    width: 60,
-    height: 60,
-    resizeMode: "contain",
-  },
-  mid: {
-    width: "50%",
-    alignItems: "center",
-  },
-  right: {
-    width: "30%",
-    alignItems: "center",
-  },
-  power: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "green",
-  },
-  btn: {
-    minHeight: 70,
-    width: "90%",
-    backgroundColor: "green",
-    borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
-  },
+
+  btn:{minHeight:70,width:"90%",backgroundColor:"green",borderRadius:10,alignItems:"center",justifyContent:"center"}
 });
