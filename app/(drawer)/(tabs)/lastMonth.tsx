@@ -166,7 +166,6 @@ console.log(result.chargeableUnits);
             <TextInput style={styles.input}
             placeholder="final bill amount"
             value={bill}
-            onChangeText={setbill}
             editable={false}
             keyboardType="number-pad"/>
       
