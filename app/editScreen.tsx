@@ -15,7 +15,7 @@ export default function EditProfileScreen() {
                 let storedname=await AsyncStorage.getItem('name');                
                 let storedemail=await AsyncStorage.getItem('email');
                 setemail(storedemail);
-                setname(storedname)
+                setname(storedname);
             }
             load();
         },[])
