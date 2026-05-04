@@ -22,7 +22,6 @@ export  default function Drawernavigate(){
         }}
         />  
         <Drawer.Screen name="profileScreen" options={{headerShown:true}}/>
-        <Drawer.Screen name="settingsScreen" options={{headerShown:true}}/>
          </Drawer>   
     )
 }
