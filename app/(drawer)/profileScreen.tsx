@@ -15,7 +15,14 @@ export default function ProfileScreen() {
   useEffect(() => {
     const loadImage = async () => {
       const saved = await AsyncStorage.getItem("profile_image");
-      if (saved) setImg(saved);
+      if (saved) {
+        setImg(saved)
+    };
+      let username=await AsyncStorage.getItem('name');
+      let useremail=await AsyncStorage.getItem('email');
+      setemail(useremail);
+      setname(username);
+
     };
 
     loadImage();

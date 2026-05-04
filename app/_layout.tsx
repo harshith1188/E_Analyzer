@@ -10,6 +10,5 @@ export default function RootLayout() {
         <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
         <Stack.Screen name="editScreen" options={{ headerShown: true,title:'Edit Profile' }} />
       </Stack>
-    
   );
 }
