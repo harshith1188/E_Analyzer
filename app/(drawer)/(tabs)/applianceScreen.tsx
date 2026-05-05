@@ -259,7 +259,7 @@ export default function Appliances() {
 }
 
 const styles = StyleSheet.create({
-  c1:{minHeight:120,width:"90%",padding:20,backgroundColor:"rgba(0,0,0,0.1)",borderRadius:10},
+  c1:{minHeight:120,width:"90%",padding:20,backgroundColor:"rgba(0,0,0,0.1)",borderRadius:10,alignItems:"center",justifyContent:"space-evenly",borderColor:'green',borderWidth:1},
   h1:{fontSize:28,fontWeight:"bold",color:"green"},
   h2:{fontSize:20},
   h3:{fontSize:15},

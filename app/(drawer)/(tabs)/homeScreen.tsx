@@ -12,6 +12,7 @@ export default  function HomeScreen(){
   const[l_finalbill,setl_finalbill]=useState(0);
   const[msg,setmsg] = useState(''); 
   const[color,setcolor]=useState('black');
+  const[color2,setcolor2]=useState('black');
 
 const [highAppliance, setHighAppliance] = useState(null);
   useFocusEffect(
@@ -25,8 +26,9 @@ const [highAppliance, setHighAppliance] = useState(null);
           let subsidy_units=parseddata.subsidyUnits;
           let extra_charges=parseddata.extraChargePerUnit;
           let pp=parseddata.pricePerUnit;
-        //getting the total units consumed in the current month
-        let totalunits=await AsyncStorage.getItem('totalUnits');
+       
+          //getting the total units consumed in the current month
+          let totalunits=await AsyncStorage.getItem('totalUnits');
        
         //calculating the final bill for the current month
           const result = calculateFinalBill({
@@ -36,17 +38,20 @@ const [highAppliance, setHighAppliance] = useState(null);
           extraChargePerUnit: Number(extra_charges),
           fixedCharges: Number(fixed_charges),
             });
+            await AsyncStorage.setItem('currentMonthData',JSON.stringify({result}));
             setfinalbill(result.finalBill);
             setl_finalbill(parseddata.finalbill);
             setunits(totalunits);
 
             if(result.finalBill < parseddata.finalbill){
               setmsg('You saved money this month ! '+(parseddata.finalbill - result.finalBill).toFixed(2)+ ' ₹');
-              setcolor('black');
+              setcolor('green');
+              setcolor2('red');
             }
             else if(result.finalBill > parseddata.finalbill){
               setmsg('Your bill increased this month by ₹'+(result.finalBill - parseddata.finalbill).toFixed(2));
               setcolor('red');
+              setcolor2('green');
             }
          
 
@@ -80,7 +85,7 @@ const [highAppliance, setHighAppliance] = useState(null);
   <SafeAreaView style={{flex:1,backgroundColor:'white'}}>
   <ScrollView contentContainerStyle={{alignItems:'center',justifyContent:'center',gap:30}} style={{flex:1}}>
     
-    {/* c1     */}
+    {/* c1*/}
     <View  style={styles.c1}>
     <Text style={styles.h2}>Hello user 🖐️</Text>
     <Text style={styles.h3}>Here's your electricity overview</Text>
@@ -123,7 +128,7 @@ const [highAppliance, setHighAppliance] = useState(null);
 
     <View style={styles.c4_2}>
       <Text style={{fontSize:20,fontWeight:'bold'}}>Last Month</Text>
-      <Text style={[styles.h2]}>₹{l_finalbill}</Text>
+      <Text style={[styles.h2,{color:color2}]}>₹{l_finalbill}</Text>
       </View>
 
       <View style={{padding:10,}}><Text style={{fontSize:14,fontWeight:'bold',color:color}}>{msg}</Text></View>
@@ -182,9 +187,7 @@ const [highAppliance, setHighAppliance] = useState(null);
         <Text style={styles.h3}>use solar energy, to save money</Text>
         </View>
 
-    </View>
-    
-    
+    </View>    
     </ScrollView>
   
   </SafeAreaView>
