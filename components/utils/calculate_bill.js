@@ -62,6 +62,8 @@ export function calculateFinalBill({
     chargeableUnits,
     energyCost,
     extraCost,
+    totalUnits,
+    pricePerUnit,
     fixedCharges,
     finalBill,
   };
