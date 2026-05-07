@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "E_Analyzer",
-    "slug": "E_Analyzer",
+    "slug": "e_analyzer",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -12,6 +12,7 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.harshith_leet.e_analyzer",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -38,11 +39,19 @@
             "backgroundColor": "#000000"
           }
         }
-      ]
+      ],
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "767a97b5-0342-4186-afaf-d3eaf00fef9b"
+      }
+    },
+    "owner": "harshith_leet"
   }
 }
