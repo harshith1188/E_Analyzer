@@ -11,8 +11,6 @@ export default function RootLayout() {
         <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
         <Stack.Screen name="editScreen" options={{ headerShown: true,title:'Edit Profile' }} />
         <Stack.Screen name="knowMore" options={{ headerShown: true,title:'Know More About Solar' }} />
-        <Stack.Screen name="index" options={{ headerShown: true,title:'index' }}/>
-        
       </Stack>
   );
 }

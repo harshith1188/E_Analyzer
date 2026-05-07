@@ -6,7 +6,7 @@ export default function Tabnav(){
     <Tabs screenOptions={{headerShown: false,}}>
 
     
-      <Tabs.Screen name="homeScreen" options={{title: 'Home',tabBarIcon: ({ color }) => <MaterialIcons name="home" size={28}/>,}}
+      <Tabs.Screen name="index" options={{title: 'Home',tabBarIcon: ({ color }) => <MaterialIcons name="home" size={28}/>,}}
       />
     
      <Tabs.Screen name="lastMonth" options={{title: 'lastmonth',tabBarIcon: ({ color }) => <MaterialIcons name="preview" size={28}/>,}}
